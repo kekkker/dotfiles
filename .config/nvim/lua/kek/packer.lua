@@ -33,6 +33,8 @@ return require('packer').startup(function(use)
 use { "catppuccin/nvim", as = "catppuccin" }
 use { "mhinz/vim-signify", as = "vim-signify" }
 use {"akinsho/toggleterm.nvim", tag = '*', config = function()
-  require("toggleterm").setup()
+    require("toggleterm").setup()
 end}
+use { "hrsh7th/nvim-cmp" }
+use { "hrsh7th/cmp-nvim-lsp" }
 end)
