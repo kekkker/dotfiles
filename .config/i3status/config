@@ -1,0 +1,72 @@
+general {
+    interval 		= 5
+    colors 			= true
+    color_good      = '#88b090'
+    color_degraded  = '#ccdc90'
+    color_bad       = '#e89393'
+}
+
+order += "ethernet wg-mullvad"
+order += "ethernet eno1"
+order += "volume master"
+order += "disk /"
+order += "disk /home"
+order += "cpu_temperature 0"
+order += "cpu_usage 0"
+order += "load"
+order += "memory"
+order += "tztime local"
+
+ethernet eno1 {
+    format_up = ""
+    format_down = ""
+}
+
+ethernet wg-mullvad {
+    format_up = " "
+    format_down = " "
+}
+
+tztime local {
+    format = "%d.%m.%y %H:%M:%S   "
+}
+
+load {
+    format = "%5min"
+}
+
+cpu_usage {
+    format = "%usage"
+}
+
+cpu_temperature 0 {
+	format = "%degrees°C"
+}
+
+memory {
+    format = "%used"
+    threshold_degraded = "10%"
+    format_degraded = "MEMORY: %free"
+}
+
+/* disk "/home" { */
+/* 	format = "SSD: %avail" */
+/* 	prefix_type	= custom */
+/* 	low_threshold = 20 */
+/* 	threshold_type = percentage_avail */
+/* } */
+
+disk "/" {
+	format = "M2: %avail"
+	prefix_type	= custom
+	low_threshold = 20
+	threshold_type = percentage_avail
+}
+
+volume master {
+    format = "%volume "
+    format_muted = "婢"
+    device = "default"
+    mixer = "Master"
+    mixer_idx = 0
+}
