@@ -79,11 +79,6 @@ _G.packer_plugins = {
     path = "/home/kek/.local/share/nvim/site/pack/packer/start/LuaSnip",
     url = "https://github.com/L3MON4D3/LuaSnip"
   },
-  catppuccin = {
-    loaded = true,
-    path = "/home/kek/.local/share/nvim/site/pack/packer/start/catppuccin",
-    url = "https://github.com/catppuccin/nvim"
-  },
   ["cmp-nvim-lsp"] = {
     loaded = true,
     path = "/home/kek/.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp",
