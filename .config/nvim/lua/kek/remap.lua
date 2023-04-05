@@ -1,7 +1,7 @@
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>w", ':w<CR>')
-vim.keymap.set("n", "<leader>q", ':wq!<CR>')
+vim.keymap.set("n", "<leader>q", ':q!<CR>')
 
 function _lazygit_toggle()
     local Terminal  = require('toggleterm.terminal').Terminal
