@@ -30,10 +30,16 @@ return require('packer').startup(function(use)
         {'L3MON4D3/LuaSnip'},     -- Required
     }
 }
-use { "mhinz/vim-signify", as = "vim-signify" }
 use {"akinsho/toggleterm.nvim", tag = '*', config = function()
     require("toggleterm").setup()
 end}
 use { "hrsh7th/nvim-cmp" }
 use { "hrsh7th/cmp-nvim-lsp" }
+use { "nvim-lua/plenary.nvim" }
+use {
+  'tanvirtin/vgit.nvim',
+  requires = {
+    'nvim-lua/plenary.nvim'
+  }
+}
 end)

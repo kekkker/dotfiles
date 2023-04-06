@@ -135,10 +135,10 @@ _G.packer_plugins = {
     path = "/home/kek/.local/share/nvim/site/pack/packer/start/toggleterm.nvim",
     url = "https://github.com/akinsho/toggleterm.nvim"
   },
-  ["vim-signify"] = {
+  ["vgit.nvim"] = {
     loaded = true,
-    path = "/home/kek/.local/share/nvim/site/pack/packer/start/vim-signify",
-    url = "https://github.com/mhinz/vim-signify"
+    path = "/home/kek/.local/share/nvim/site/pack/packer/start/vgit.nvim",
+    url = "https://github.com/tanvirtin/vgit.nvim"
   }
 }
 
