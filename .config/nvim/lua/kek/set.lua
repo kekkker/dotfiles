@@ -10,7 +10,6 @@ vim.opt.wrap = false
 
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
-vim.wo.signcolumn = 'yes'
 
 vim.opt.termguicolors = true
 
@@ -18,4 +17,5 @@ vim.opt.updatetime = 50
 vim.opt.clipboard = "unnamedplus"
 
 vim.opt.signcolumn = "yes"
+vim.wo.signcolumn = "yes"
 vim.cmd('highlight SignColumn guibg=black')

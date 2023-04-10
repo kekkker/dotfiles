@@ -35,7 +35,6 @@ use {"akinsho/toggleterm.nvim", tag = '*', config = function()
 end}
 use { "hrsh7th/nvim-cmp" }
 use { "hrsh7th/cmp-nvim-lsp" }
-use { "nvim-lua/plenary.nvim" }
 use {
   'tanvirtin/vgit.nvim',
   requires = {
