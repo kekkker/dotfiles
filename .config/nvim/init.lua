@@ -23,7 +23,6 @@ use { "hrsh7th/cmp-path" }
 use { "hrsh7th/cmp-cmdline" }
 use { 'tanvirtin/vgit.nvim', requires = { 'nvim-lua/plenary.nvim' } }
 use { 'm4xshen/autoclose.nvim' }
-use { 'theprimeagen/harpoon' }
 use { 'nvim-lualine/lualine.nvim', requires = { 'nvim-tree/nvim-web-devicons', opt = true }}
 use { 'mbbill/undotree' }
 use {
@@ -68,11 +67,6 @@ cmp.setup({
 })
 -- nvim-cmp --
 
--- HARPOON --
-mark = require("harpoon.mark")
-ui = require("harpoon.ui")
--- HARPOON --
-
 -- LSP ZERO --
 lsp = require("lsp-zero")
 
@@ -92,6 +86,18 @@ lsp.on_attach(function(client, bufnr)
   vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
   vim.keymap.set("n", "<leader>la", function() vim.lsp.buf.code_action() end, opts)
 end)
+
+lsp.format_on_save({
+  format_opts = {
+    async = false,
+    timeout_ms = 10000,
+  },
+  servers = {
+    ['gopls'] = {'go'},
+    ['clangd'] = {'c', 'cpp', 'objc', 'objcpp'},
+  }
+})
+
 lsp.setup()
 -- LSP ZERO --
 
@@ -168,24 +174,11 @@ end
 
 vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>lua _lazygit_toggle()<CR>", {noremap = true, silent = true})
 
-vim.api.nvim_create_autocmd("BufWritePre", {
-  buffer = buffer,
-  callback = function()
-    vim.lsp.buf.format { async = false }
-  end
-})
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.keymap.set("x", "<leader>p", "\"_dP")
 vim.keymap.set("n", "L", vim.cmd.bnext)
 vim.keymap.set("n", "H", vim.cmd.bprevious)
-
-vim.keymap.set("n", "<leader>a", mark.add_file)
-vim.keymap.set("n", "<leader>h", ui.toggle_quick_menu)
-
-vim.keymap.set("n", "<C-t>", function() ui.nav_file(1) end)
-vim.keymap.set("n", "<C-h>", function() ui.nav_file(2) end)
-vim.keymap.set("n", "<C-n>", function() ui.nav_file(3) end)
 
 vim.keymap.set('n', '<leader>fw', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
