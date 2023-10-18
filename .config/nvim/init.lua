@@ -166,13 +166,13 @@ vim.keymap.set("n", "<leader>w", ':w<CR>')
 vim.keymap.set("n", "<leader>q", ':q!<CR>')
 vim.keymap.set("n", "<C-Tab>", ':asdasd')
 
-function _tig_toggle()
+function _lazygit_toggle()
     local Terminal  = require('toggleterm.terminal').Terminal
-    local tig = Terminal:new({ cmd = "tig", hidden = true, direction = "float" })
-    tig:toggle()
+    local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
+    lazygit:toggle()
 end
 
-vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>lua _tig_toggle()<CR>", {noremap = true, silent = true})
+vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>lua _lazygit_toggle()<CR>", {noremap = true, silent = true})
 
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
