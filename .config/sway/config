@@ -13,13 +13,14 @@ client.urgent           $urgentBgColor   		$urgentBgColor   $textColor          
 input type:keyboard {
     repeat_delay 200
     repeat_rate 30
+
 }
 
 bar {
         status_command i3status
         position top
-        tray_output none
-        tray_padding 3
+        #tray_output none
+        #tray_padding 3
         font pango: Noto Sans Regular 10
         separator_symbol |
        colors {
@@ -46,21 +47,21 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-bindsym $mod+Return exec alacritty -e tmux new-session
-bindsym $mod+w exec librewolf
-bindsym $mod+n exec alacritty -e lf
+bindsym $mod+Return exec foot
+bindsym $mod+w exec qutebrowser
+bindsym $mod+n exec foot ranger
 
 # kill focused window
 bindsym $mod+q kill -9
 # lockscreen
-bindsym $mod+o exec swaylock -c 000000
+#bindsym $mod+o exec swaylock -c 000000
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id wofi --show=drun
+bindsym $mod+d exec --no-startup-id bemenu-run
 # change focus
-bindsym $mod+j focus left
+bindsym $mod+j focus next
 # bindsym $mod+j focus down
 # bindsym $mod+k focus up
-bindsym $mod+k focus right
+bindsym $mod+k focus prev
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -73,6 +74,7 @@ bindsym $mod+Shift+j move left
 bindsym $mod+Shift+k move down
 bindsym $mod+Shift+l move up
 bindsym $mod+Shift+semicolon move right
+bindsym $mod+z move left
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -189,33 +191,58 @@ input type:keyboard {
 # Screenshot
 bindsym Print exec grimshot save screen ~/pics/$(date +"%d-%m-%Y-%H_%M_%S").png && notify-send "Screenshot saved to ~/$(date +"%d-%m-%Y-%H_%M_%S").png"
 # Program to workspace
+
 # assign [title="(?i)lf"] $ws3
 # assign [class="Thunderbird"] $ws4
-assign [class="TelegramDesktop"] $ws4
-assign [class="spotify"] $ws4
+#assign [class="TelegramDesktop"] $ws4
+#assign [class="spotify"] $ws4
 # automatic set focus new window if it opens on another workspace then the current:
 for_window [title=lf] focus
 # Wallpaper
-exec --no-startup-id swaybg -m center -i /home/kek/pics/purple.jpeg
+#exec --no-startup-id swaybg -m center -i /home/kek/pics/purple.jpeg
 # Desktop notifications
 exec --no-startup-id dunst --config ~/.config/dunst/dunstrc
-# Autostart apps
-# exec --no-startup-id sleep 3 && thunderbird
 # AutoSleep
 exec --no-startup-id swayidle -w timeout 600 'swaylock -c 000000 -f' timeout 695 'swaymsg "output * dpms off"' timeout 700 'systemctl suspend' resume 'swaymsg "output * dpms on"' before-sleep 'swaylock -c 000000 -f'
 exec --no-startup-id sway-audio-idle-inhibit
 # NightShift
 exec --no-startup-id gammastep -l 59.4716181:24.5981628 -t 6500:2000 -b 1:0.4
-# Thunderbird
-# bindsym $mod+m [class="thunderbird"] scratchpad show, move position center
-# for_window [class="thunderbird"] move scratchpad, border pixel 2, resize set 2500 1200
 # Multimedia keys
-bindsym XF86AudioPlay exec playerctl play
-bindsym XF86AudioPause exec playerctl pause
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPrev exec playerctl previous
+bindsym $mod+period exec playerctl next
+bindsym $mod+comma exec playerctl previous
 # Calculator
 bindsym $mod+c exec speedcrunch
 default_border pixel 2
 #Bookmarks
 # bindsym $mod+i exec xdotool type $(grep -v '^#' ~/documents/bookmarks | dmenu -i -l 50 | cut -d ' ' -f1)
+exec --no-startup-id pipewire
+
+#
+# Use keyboard as mouse
+#
+mode "keycursor" {
+    bindsym h seat - cursor move -10 0
+    bindsym j seat - cursor move 0 +10
+    bindsym k seat - cursor move 0 -10
+    bindsym l seat - cursor move +10 0
+
+    bindsym Shift+h seat - cursor move -50 0
+    bindsym Shift+j seat - cursor move 0 +50
+    bindsym Shift+k seat - cursor move 0 -50
+    bindsym Shift+l seat - cursor move +50 0
+
+    bindsym Escape mode "default"
+
+    # Left click
+    bindsym --no-repeat Return seat - cursor press button1
+    bindsym --release Return seat - cursor release button1
+
+    # Right click
+    bindsym --no-repeat Shift+Return seat - cursor press button3
+    bindsym --release Shift+Return seat - cursor release button3
+}
+
+bindsym $mod+m mode "keycursor"
+
+for_window [tiling] splitt
+default_orientation horizontal

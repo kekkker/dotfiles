@@ -1,0 +1,13 @@
+set realname = "root"
+set from = "root@ploxo.org"
+set smtp_url = "smtps://root@ploxo.org@smtp.purelymail.com:465"
+set smtp_pass = "EXAMPLE"
+
+color status     brightgreen    blue
+
+set folder = "~/.mutt/mailbox/root"
+set spoolfile = "~/.mutt/mailbox/root/inbox"
+set postponed = "~/.mutt/mailbox/root/drafts"
+set trash = "+/trash"
+set record = ""
+mailboxes `find ~/.mutt/mailbox/root -mindepth 1 -maxdepth 1 -type d | xargs`

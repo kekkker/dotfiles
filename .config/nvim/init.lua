@@ -45,7 +45,9 @@ use {
     {'L3MON4D3/LuaSnip'},     -- Required
   }
 }
+use{"stevearc/conform.nvim"}
 end)
+
 require("autoclose").setup()
 -- PACKER --
 
@@ -85,18 +87,9 @@ lsp.on_attach(function(client, bufnr)
   vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
   vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
   vim.keymap.set("n", "<leader>la", function() vim.lsp.buf.code_action() end, opts)
+  vim.keymap.set("n", "<leader>lh", function() vim.lsp.buf.hover() end, opts)
+  vim.keymap.set("n", "<leader>li", function() vim.lsp.buf.implementation() end, opts)
 end)
-
-lsp.format_on_save({
-  format_opts = {
-    async = false,
-    timeout_ms = 10000,
-  },
-  servers = {
-    ['gopls'] = {'go'},
-    ['clangd'] = {'c', 'cpp', 'objc', 'objcpp'},
-  }
-})
 
 lsp.setup()
 -- LSP ZERO --
@@ -159,6 +152,36 @@ require('vgit').setup({
   }
 })
 -- VGIT --
+
+-- CONFORM --
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*",
+  callback = function(args)
+    require("conform").format({ bufnr = args.buf })
+  end,
+})
+
+require("conform").setup({
+  formatters_by_ft = {
+    bash = { "shfmt" },
+    sh = { "shfmt" },
+    go = { "gofmt" },
+    c = { "astyle" },
+    yml = { "yamlfmt" },
+    yaml = { "yamlfmt" },
+  },
+})
+
+require("conform").formatters.astyle = {
+  prepend_args = { "--style=allman", "--indent=spaces=4", "--pad-header", "--align-pointer=name", "--convert-tabs", "--pad-oper", "--unpad-paren", "--pad-comma", }
+  -- The base args are { "-filename", "$FILENAME" } so the final args will be
+  -- { "-i", "2", "-filename", "$FILENAME" }
+}
+
+require("conform").formatters.yamlfmt = {
+  prepend_args = { "--conf=/home/kek/.config/.yamlfmt" },
+}
+-- CONFORM --
 
 -- REMAPS
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
@@ -232,7 +255,7 @@ vim.opt.relativenumber = true
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 2
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
 vim.opt.wrap = false

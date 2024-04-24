@@ -6,11 +6,8 @@ general {
     color_bad       = '#e89393'
 }
 
-order += "ethernet wg-mullvad"
-order += "ethernet eno1"
 order += "volume master"
 order += "disk /"
-order += "disk /home"
 order += "cpu_temperature 0"
 order += "cpu_usage 0"
 order += "load"
@@ -64,9 +61,10 @@ disk "/" {
 }
 
 volume master {
-    format = "%volume "
-    format_muted = "婢"
+    format = "%volume"
+    format_muted = ""
     device = "default"
     mixer = "Master"
     mixer_idx = 0
 }
+

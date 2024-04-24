@@ -1,0 +1,4 @@
+text/html;  w3m -T text/html %s; copiousoutput;
+text/plain; cat %s; copiousoutput
+application/pdf; zathura %s; needsterminal;
+image/png; sxiv %s; needsterminal;
