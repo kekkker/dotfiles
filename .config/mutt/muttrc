@@ -1,3 +1,5 @@
+bind index R sync-mailbox
+
 folder-hook 'root' 'source ~/.config/mutt/root.profile'
 macro index,pager <f1> '<sync-mailbox><enter-command>source ~/.config/mutt/root.profile<enter><change-folder>!<enter>'
 
