@@ -1,71 +1,81 @@
 vim.g.mapleader = " "
+vim.cmd([[colorscheme vim]])
 
 -- PACKER --
-vim.cmd [[packadd packer.nvim]]
+vim.cmd([[packadd packer.nvim]])
 
-require('packer').startup(function(use)
-	use 'wbthomason/packer.nvim'
+require("packer").startup(function(use)
+	use("wbthomason/packer.nvim")
 
-	use {
-		'nvim-telescope/telescope.nvim',
-		requires = { {'nvim-lua/plenary.nvim'} }
-	}
+	use({
+		"nvim-telescope/telescope.nvim",
+		requires = { { "nvim-lua/plenary.nvim" } },
+	})
 
-	use('nvim-treesitter/nvim-treesitter', {run  = ':TSUpdate'})
+	use("nvim-treesitter/nvim-treesitter", {})
 
-use {"akinsho/toggleterm.nvim", tag = '*', config = function()
-    require("toggleterm").setup()
-end}
-use { "hrsh7th/nvim-cmp" }
-use { "hrsh7th/cmp-nvim-lsp" }
-use { "hrsh7th/cmp-buffer" }
-use { "hrsh7th/cmp-path" }
-use { "hrsh7th/cmp-cmdline" }
-use { 'tanvirtin/vgit.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-use { 'm4xshen/autoclose.nvim' }
-use { 'nvim-lualine/lualine.nvim', requires = { 'nvim-tree/nvim-web-devicons', opt = true }}
-use { 'mbbill/undotree' }
-use {
-  'VonHeikemen/lsp-zero.nvim',
-  branch = 'v2.x',
-  requires = {
-    -- LSP Support
-    {'neovim/nvim-lspconfig'},             -- Required
-    {                                      -- Optional
-      'williamboman/mason.nvim',
-      run = function()
-        pcall(vim.cmd, 'MasonUpdate')
-      end,
-    },
-    {'williamboman/mason-lspconfig.nvim'}, -- Optional
+	use({
+		"akinsho/toggleterm.nvim",
+		tag = "*",
+		config = function()
+			require("toggleterm").setup()
+		end,
+	})
+	use({ "hrsh7th/nvim-cmp" })
+	use({ "hrsh7th/cmp-nvim-lsp" })
+	use({ "hrsh7th/cmp-buffer" })
+	use({ "hrsh7th/cmp-path" })
+	use({ "hrsh7th/cmp-cmdline" })
+	use({ "tanvirtin/vgit.nvim", requires = { "nvim-lua/plenary.nvim" } })
+	use({ "m4xshen/autoclose.nvim" })
+	use({ "nvim-lualine/lualine.nvim", requires = { "nvim-tree/nvim-web-devicons", opt = true } })
+	use({ "mbbill/undotree" })
+	use({ "ckipp01/nvim-jenkinsfile-linter", requires = { "nvim-lua/plenary.nvim" } })
+	use({
+		"VonHeikemen/lsp-zero.nvim",
+		branch = "v2.x",
+		requires = {
+			-- LSP Support
+			{ "neovim/nvim-lspconfig" }, -- Required
+			{ -- Optional
+				"williamboman/mason.nvim",
+				run = function()
+					pcall(vim.cmd, "MasonUpdate")
+				end,
+			},
+			{ "williamboman/mason-lspconfig.nvim" }, -- Optional
 
-    -- Autocompletion
-    {'hrsh7th/nvim-cmp'},     -- Required
-    {'hrsh7th/cmp-nvim-lsp'}, -- Required
-    {'L3MON4D3/LuaSnip'},     -- Required
-  }
-}
-use{"stevearc/conform.nvim"}
+			-- Autocompletion
+			{ "hrsh7th/nvim-cmp" }, -- Required
+			{ "hrsh7th/cmp-nvim-lsp" }, -- Required
+			{ "L3MON4D3/LuaSnip" }, -- Required
+		},
+	})
+	use({ "stevearc/conform.nvim" })
+	use({
+		"nvim-telescope/telescope-file-browser.nvim",
+		requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+	})
 end)
-
 require("autoclose").setup()
+
 -- PACKER --
 
--- nvim-cmp -- 
+-- nvim-cmp --
 local cmp = require("cmp")
 cmp.setup({
-    mapping = cmp.mapping.preset.insert({
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-Space>'] = cmp.mapping.complete(),
-        ['<C-e>'] = cmp.mapping.abort(),
-        ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    }),
-    sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-    }, {
-        { name = 'buffer' },
-    })
+	mapping = cmp.mapping.preset.insert({
+		["<C-b>"] = cmp.mapping.scroll_docs(-4),
+		["<C-f>"] = cmp.mapping.scroll_docs(4),
+		["<C-Space>"] = cmp.mapping.complete(),
+		["<C-e>"] = cmp.mapping.abort(),
+		["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+	}),
+	sources = cmp.config.sources({
+		{ name = "nvim_lsp" },
+	}, {
+		{ name = "buffer" },
+	}),
 })
 -- nvim-cmp --
 
@@ -73,70 +83,97 @@ cmp.setup({
 lsp = require("lsp-zero")
 
 lsp.ensure_installed({
-	'clangd',
+	"clangd",
 })
 
 lsp.preset("recommended")
 lsp.on_attach(function(client, bufnr)
-  local opts = {buffer = buffnr, remap = false}
-  vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-  vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-  vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-  vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.goto_next() end, opts)
-  vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-  vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-  vim.keymap.set("n", "<leader>la", function() vim.lsp.buf.code_action() end, opts)
-  vim.keymap.set("n", "<leader>lh", function() vim.lsp.buf.hover() end, opts)
-  vim.keymap.set("n", "<leader>li", function() vim.lsp.buf.implementation() end, opts)
+	local opts = { buffer = buffnr, remap = false }
+	vim.keymap.set("n", "gd", function()
+		vim.lsp.buf.definition()
+	end, opts)
+	vim.keymap.set("n", "K", function()
+		vim.lsp.buf.hover()
+	end, opts)
+	vim.keymap.set("n", "<leader>vws", function()
+		vim.lsp.buf.workspace_symbol()
+	end, opts)
+	vim.keymap.set("n", "<leader>vd", function()
+		vim.diagnostic.open_float()
+	end, opts)
+	vim.keymap.set("n", "<leader>vd", function()
+		vim.diagnostic.goto_next()
+	end, opts)
+	vim.keymap.set("n", "[d", function()
+		vim.diagnostic.goto_next()
+	end, opts)
+	vim.keymap.set("n", "]d", function()
+		vim.diagnostic.goto_prev()
+	end, opts)
+	vim.keymap.set("n", "<leader>la", function()
+		vim.lsp.buf.code_action()
+	end, opts)
 end)
-
 lsp.setup()
 -- LSP ZERO --
 
 -- LUA LINE --
-require('lualine').setup {
-  options = {
-    icons_enabled = true,
-    theme = 'onedark',
-    component_separators = '|',
-    section_separators = '',
-  },
-  sections = {
-    lualine_a = {
-      {
-        'buffers',
-      }
-    },
-    lualine_c = {
-      {
-        'diagnostics',
-      }
-    }
-  }
-}
--- LUA LINE -- 
+require("lualine").setup({
+	options = {
+		icons_enabled = true,
+		theme = "onedark",
+		component_separators = "|",
+		section_separators = "",
+	},
+	sections = {
+		lualine_a = {
+			{
+				"buffers",
+			},
+		},
+		lualine_c = {
+			{
+				"diagnostics",
+			},
+		},
+	},
+})
+-- LUA LINE --
 
 -- TELESCOPE --
-builtin = require('telescope.builtin')
+builtin = require("telescope.builtin")
+require("telescope").setup({
+	defaults = {
+		layout_strategy = "horizontal",
+		layout_config = {
+			horizontal = {
+				prompt_position = "top",
+				width = { padding = 0 },
+				height = { padding = 0 },
+				preview_width = 0.5,
+			},
+		},
+		sorting_strategy = "ascending",
+	},
+})
 -- TELESCOPE --
 
 -- TREESITTER --
-require'nvim-treesitter.configs'.setup {
-  -- A list of parser names, or "all" (the five listed parsers should always be installed)
-  ensure_installed = { "c", "lua", "go", "rust", "yaml", "python"},
+require("nvim-treesitter.configs").setup({
+	-- A list of parser names, or "all" (the five listed parsers should always be installed)
+	ensure_installed = { "c", "lua", "go", "rust", "yaml", "python" },
 
-  -- Install parsers synchronously (only applied to `ensure_installed`)
-  sync_install = false,
+	-- Install parsers synchronously (only applied to `ensure_installed`)
+	sync_install = false,
 
-  -- Automatically install missing parsers when entering buffer
-  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-  auto_install = true,
+	-- Automatically install missing parsers when entering buffer
+	-- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+	auto_install = true,
 
-  highlight = {
-    enable = true,
-  },
-}
+	highlight = {
+		enable = true,
+	},
+})
 -- TREESITTER --
 
 -- UNDOTREE --
@@ -144,71 +181,104 @@ vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 -- UNDOTREE --
 
 -- VGIT --
-require('vgit').setup({
-  keymaps = {
-    ['n <leader>gk'] = function() require('vgit').hunk_up() end,
-    ['n <leaders>gj'] = function() require('vgit').hunk_down() end,
-    ['n <leader>gb'] = function() require('vgit').buffer_blame_preview() end,
-  }
+require("vgit").setup({
+	keymaps = {
+		["n <leader>gk"] = function()
+			require("vgit").hunk_up()
+		end,
+		["n <leaders>gj"] = function()
+			require("vgit").hunk_down()
+		end,
+		["n <leader>gb"] = function()
+			require("vgit").buffer_blame_preview()
+		end,
+	},
 })
 -- VGIT --
 
 -- CONFORM --
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*",
-  callback = function(args)
-    require("conform").format({ bufnr = args.buf })
-  end,
-})
-
 require("conform").setup({
-  formatters_by_ft = {
-    bash = { "shfmt" },
-    sh = { "shfmt" },
-    go = { "gofmt" },
-    c = { "astyle" },
-    yml = { "yamlfmt" },
-    yaml = { "yamlfmt" },
-  },
+	formatters = {
+		yamlfmt = {
+			command = "/Users/ilja.jevstignejev/.cargo/bin/yamlfmt",
+			args = { "-formatter", "indentless_arrays=false,retain_line_breaks=true,include_document_start=true", "-" },
+		},
+	},
+	formatters_by_ft = {
+		sh = { "shfmt" },
+		bash = { "shfmt" },
+		terraform = { "terraform_fmt" },
+		yaml = { "yamlfmt" },
+		yml = { "yamlfmt" },
+	},
 })
 
-require("conform").formatters.astyle = {
-  prepend_args = { "--style=allman", "--indent=spaces=4", "--pad-header", "--align-pointer=name", "--convert-tabs", "--pad-oper", "--unpad-paren", "--pad-comma", }
-  -- The base args are { "-filename", "$FILENAME" } so the final args will be
-  -- { "-i", "2", "-filename", "$FILENAME" }
-}
-
-require("conform").formatters.yamlfmt = {
-  prepend_args = { "--conf=/home/kek/.config/.yamlfmt" },
-}
+vim.api.nvim_create_autocmd("BufWritePre", {
+	pattern = "*",
+	callback = function(args)
+		require("conform").format({ bufnr = args.buf })
+	end,
+})
 -- CONFORM --
 
+-- telescope-file-browser --
+require("telescope").setup({
+	extensions = {
+		file_browser = {
+			-- disables netrw and use telescope-file-browser in its place
+			hijack_netrw = true,
+			initial_mode = "normal",
+		},
+	},
+})
+-- To get telescope-file-browser loaded and working with telescope,
+-- you need to call load_extension, somewhere after setup function:
+require("telescope").load_extension("file_browser")
+vim.keymap.set("n", "<leader>e", ":Telescope file_browser<CR>")
+
+-- telescope-file-browser --
+
 -- REMAPS
-vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
-vim.keymap.set("n", "<leader>w", ':w<CR>')
-vim.keymap.set("n", "<leader>q", ':q!<CR>')
-vim.keymap.set("n", "<C-Tab>", ':asdasd')
+vim.keymap.set("n", "<leader>w", ":w<CR>")
+vim.keymap.set("n", "<leader>q", ":q!<CR>")
+vim.keymap.set("n", "<C-Tab>", ":asdasd")
 
 function _lazygit_toggle()
-    local Terminal  = require('toggleterm.terminal').Terminal
-    local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
-    lazygit:toggle()
+	local Terminal = require("toggleterm.terminal").Terminal
+	local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
+	lazygit:toggle()
 end
 
-vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>lua _lazygit_toggle()<CR>", {noremap = true, silent = true})
+vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
 
+vim.api.nvim_create_autocmd("BufWritePre", {
+	buffer = buffer,
+	callback = function()
+		vim.lsp.buf.format({ async = false })
+	end,
+})
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
-vim.keymap.set("x", "<leader>p", "\"_dP")
+vim.keymap.set("x", "<leader>p", '"_dP')
 vim.keymap.set("n", "L", vim.cmd.bnext)
 vim.keymap.set("n", "H", vim.cmd.bprevious)
 
-vim.keymap.set('n', '<leader>fw', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>gs', builtin.git_status, {})
+vim.keymap.set("n", "<C-t>", function()
+	ui.nav_file(1)
+end)
+vim.keymap.set("n", "<C-h>", function()
+	ui.nav_file(2)
+end)
+vim.keymap.set("n", "<C-n>", function()
+	ui.nav_file(3)
+end)
+
+vim.keymap.set("n", "<leader>fw", builtin.live_grep, {})
+vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
+vim.keymap.set("n", "<leader>gs", builtin.git_status, {})
 vim.keymap.set("n", "<leader>b", builtin.buffers, {})
-vim.keymap.set('n', '<leader>ps', function()
-  builtin.grep_string({ search = vim.fn.input("Grep > ") });
+vim.keymap.set("n", "<leader>ps", function()
+	builtin.grep_string({ search = vim.fn.input("Grep > ") })
 end)
 
 vim.keymap.set("n", "<leader>x", vim.cmd.bd)
@@ -235,7 +305,7 @@ vim.opt.clipboard = "unnamedplus"
 
 vim.opt.signcolumn = "yes"
 vim.wo.signcolumn = "yes"
-vim.cmd('highlight SignColumn guibg=black')
+vim.cmd("highlight SignColumn guibg=black")
 vim.cmd("hi! link NormalFloat Normal")
 
 vim.g.netrw_banner = 0
@@ -270,7 +340,7 @@ vim.opt.clipboard = "unnamedplus"
 
 vim.opt.signcolumn = "yes"
 vim.wo.signcolumn = "yes"
-vim.cmd('highlight SignColumn guibg=black')
+vim.cmd("highlight SignColumn guibg=black")
 vim.cmd("hi! link NormalFloat Normal")
 
 vim.g.netrw_banner = 0
