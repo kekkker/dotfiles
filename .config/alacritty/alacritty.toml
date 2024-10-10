@@ -1,0 +1,42 @@
+[font]
+size = 13.0
+normal = { family = "monospace", style = "Regular" }
+
+[font.offset]
+x = 0
+y = 1
+
+[window]
+decorations = "None"
+dynamic_padding = true
+
+[window.padding]
+x = 0
+y = 1
+
+# Default colors
+[colors.primary]
+background = '#000000'
+foreground = '#C0C7C8'
+
+# Normal colors
+[colors.normal]
+black   = '#000000'
+red     = '#A80000'
+green   = '#00cc00'
+yellow  = '#A85400'
+blue    = '#3366ff'
+magenta = '#A800A8'
+cyan    = '#00A8A8'
+white   = '#FFFFFF'
+
+# Bright colors
+[colors.bright]
+black   = '#545454'
+red     = '#FC5454'
+green   = '#54FC54'
+yellow  = '#FCFC54'
+blue    = '#5454FC'
+magenta = '#FC54FC'
+cyan    = '#54FCFC'
+white   = '#FFFFFF'

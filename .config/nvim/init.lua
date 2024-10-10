@@ -52,10 +52,8 @@ require("packer").startup(function(use)
 		},
 	})
 	use({ "stevearc/conform.nvim" })
-	use({
-		"nvim-telescope/telescope-file-browser.nvim",
-		requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-	})
+    use({"justinmk/vim-dirvish"})
+    use({"tamago324/lir.nvim"})
 end)
 require("autoclose").setup()
 
@@ -156,7 +154,6 @@ require("telescope").setup({
 		sorting_strategy = "ascending",
 	},
 })
--- TELESCOPE --
 
 -- TREESITTER --
 require("nvim-treesitter.configs").setup({
@@ -200,7 +197,7 @@ require("vgit").setup({
 require("conform").setup({
 	formatters = {
 		yamlfmt = {
-			command = "/Users/ilja.jevstignejev/.cargo/bin/yamlfmt",
+			command = "/home/kek/.bin/yamlfmt",
 			args = { "-formatter", "indentless_arrays=false,retain_line_breaks=true,include_document_start=true", "-" },
 		},
 	},
@@ -224,17 +221,24 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 -- telescope-file-browser --
 require("telescope").setup({
 	extensions = {
-		file_browser = {
-			-- disables netrw and use telescope-file-browser in its place
-			hijack_netrw = true,
-			initial_mode = "normal",
-		},
+        file_browser = {
+          grouped = true,
+          previewer = false,
+          initial_browser = "tree",
+          -- searching activates a `telescope.find_files` like finder
+          -- you can use this to enter directories and remove ( move, copy) files to
+          -- selected dir (or selected dir of file) etc.
+          auto_depth = true,
+          depth = 1,
+          hidden = true,
+                                  hijack_netrw = true,
+                        initial_mode = "normal",
+
+        },
 	},
 })
--- To get telescope-file-browser loaded and working with telescope,
--- you need to call load_extension, somewhere after setup function:
-require("telescope").load_extension("file_browser")
-vim.keymap.set("n", "<leader>e", ":Telescope file_browser<CR>")
+
+vim.keymap.set("n", "<F11>", function() api.tree.open({ current_window = true }) end, { noremap = true })
 
 -- telescope-file-browser --
 
@@ -354,3 +358,83 @@ vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
 -- SETS --
+--
+--
+local actions = require'lir.actions'
+local mark_actions = require 'lir.mark.actions'
+local clipboard_actions = require'lir.clipboard.actions'
+
+require'lir'.setup {
+  show_hidden_files = true,
+  ignore = {}, -- { ".DS_Store", "node_modules" } etc.
+  devicons = {
+    enable = false,
+    highlight_dirname = false
+  },
+  mappings = {
+    ['l']     = actions.edit,
+    ['<C-s>'] = actions.split,
+    ['<C-v>'] = actions.vsplit,
+    ['<C-t>'] = actions.tabedit,
+
+    ['h']     = actions.up,
+    ['q']     = actions.quit,
+
+    ['D']     = actions.mkdir,
+    ['F']     = actions.newfile,
+    ['R']     = actions.rename,
+    ['@']     = actions.cd,
+    ['Y']     = actions.yank_path,
+    ['.']     = actions.toggle_show_hidden,
+    ['d']     = actions.delete,
+
+    ['J'] = function()
+      mark_actions.toggle_mark()
+      vim.cmd('normal! j')
+    end,
+    ['C'] = clipboard_actions.copy,
+    ['X'] = clipboard_actions.cut,
+    ['P'] = clipboard_actions.paste,
+  },
+  float = {
+    winblend = 1,
+    curdir_window = {
+      enable = true,
+      highlight_dirname = true
+    },
+    win_opts = function()
+      local width = math.floor(vim.o.columns)
+      local height = math.floor(vim.o.lines)
+      return {
+        border = {
+          "+", "─", "+", "│", "+", "─", "+", "│",
+        },
+        width = width,
+        height = height,
+        row = 1,
+        col = math.floor((vim.o.columns - width) / 2),
+      }
+    end,
+
+
+  },
+  hide_cursor = true
+}
+
+vim.api.nvim_create_autocmd({'FileType'}, {
+  pattern = {"lir"},
+  callback = function()
+    -- use visual mode
+    vim.api.nvim_buf_set_keymap(
+      0,
+      "x",
+      "J",
+      ':<C-u>lua require"lir.mark.actions".toggle_mark("v")<CR>',
+      { noremap = true, silent = true }
+    )
+  
+    -- echo cwd
+    vim.api.nvim_echo({ { vim.fn.expand("%:p"), "Normal" } }, false, {})
+  end
+})
+vim.keymap.set("n", "<leader>e", ":lua require'lir.float'.toggle()<CR>")
