@@ -200,6 +200,10 @@ require("conform").setup({
 			command = "/home/kek/.bin/yamlfmt",
 			args = { "-formatter", "indentless_arrays=false,retain_line_breaks=true,include_document_start=true", "-" },
 		},
+        black = {
+            command = "/home/kek/py-user/bin/black",
+            args = {    "--stdin-filename",    "$FILENAME",    "--quiet",    "-",}
+      }
 	},
 	formatters_by_ft = {
 		sh = { "shfmt" },
@@ -207,6 +211,7 @@ require("conform").setup({
 		terraform = { "terraform_fmt" },
 		yaml = { "yamlfmt" },
 		yml = { "yamlfmt" },
+		python = { "black" },
 	},
 })
 
