@@ -30,7 +30,6 @@ require("packer").startup(function(use)
 	use({ "m4xshen/autoclose.nvim" })
 	use({ "nvim-lualine/lualine.nvim", requires = { "nvim-tree/nvim-web-devicons", opt = true } })
 	use({ "mbbill/undotree" })
-	use({ "ckipp01/nvim-jenkinsfile-linter", requires = { "nvim-lua/plenary.nvim" } })
 	use({
 		"VonHeikemen/lsp-zero.nvim",
 		branch = "v2.x",
@@ -222,30 +221,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	end,
 })
 -- CONFORM --
-
--- telescope-file-browser --
-require("telescope").setup({
-	extensions = {
-        file_browser = {
-          grouped = true,
-          previewer = false,
-          initial_browser = "tree",
-          -- searching activates a `telescope.find_files` like finder
-          -- you can use this to enter directories and remove ( move, copy) files to
-          -- selected dir (or selected dir of file) etc.
-          auto_depth = true,
-          depth = 1,
-          hidden = true,
-                                  hijack_netrw = true,
-                        initial_mode = "normal",
-
-        },
-	},
-})
-
-vim.keymap.set("n", "<F11>", function() api.tree.open({ current_window = true }) end, { noremap = true })
-
--- telescope-file-browser --
 
 -- REMAPS
 vim.keymap.set("n", "<leader>w", ":w<CR>")

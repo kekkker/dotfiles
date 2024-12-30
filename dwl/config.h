@@ -1,9 +1,7 @@
 /* Taken from https://github.com/djpohly/dwl/issues/466 */
 #define COLOR(hex)                                                             \
-  {                                                                            \
-    ((hex >> 24) & 0xFF) / 255.0f, ((hex >> 16) & 0xFF) / 255.0f,              \
-        ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f                    \
-  }
+  {((hex >> 24) & 0xFF) / 255.0f, ((hex >> 16) & 0xFF) / 255.0f,               \
+   ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f}
 /* appearance */
 static const int sloppyfocus = 0;       /* focus follows mouse */
 static const int mousefollowsfocus = 1; /* mouse follows focus */
@@ -24,7 +22,7 @@ static const int tagcount = TAGCOUNT;
 
 static const Rule rules[] = {
     /* app_id     title       tags mask     isfloating   monitor */
-	{ "firefox",  NULL,       1 << 8,       0,           -1 },
+    {"firefox", NULL, 1 << 8, 0, -1},
 };
 
 /* logging */
@@ -166,7 +164,7 @@ static const Key keys[] = {
     {MODKEY, XKB_KEY_z, zoom, {0}},
     {MODKEY, XKB_KEY_Tab, view, {0}},
     {MODKEY, XKB_KEY_t, setlayout, {.v = &layouts[0]}},
-//    {MODKEY, XKB_KEY_f, setlayout, {.v = &layouts[1]}},
+    //    {MODKEY, XKB_KEY_f, setlayout, {.v = &layouts[1]}},
     {MODKEY, XKB_KEY_m, setlayout, {.v = &layouts[2]}},
     {MODKEY, XKB_KEY_space, setlayout, {0}},
     {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_space, togglefloating, {0}},
