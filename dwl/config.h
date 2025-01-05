@@ -1,4 +1,5 @@
 /* Taken from https://github.com/djpohly/dwl/issues/466 */
+#include <xkbcommon/xkbcommon-keysyms.h>
 #define COLOR(hex)                                                             \
   {((hex >> 24) & 0xFF) / 255.0f, ((hex >> 16) & 0xFF) / 255.0f,               \
    ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f}
@@ -22,7 +23,7 @@ static const int tagcount = TAGCOUNT;
 
 static const Rule rules[] = {
     /* app_id     title       tags mask     isfloating   monitor */
-    {"firefox", NULL, 1 << 8, 0, -1},
+    {"notetaker", NULL, -1, 1, -1},
 };
 
 /* logging */
@@ -125,7 +126,7 @@ static const enum libinput_config_tap_button_map button_map =
   }
 
 /* commands */
-static const char *termcmd[] = {"foot", NULL};
+static const char *termcmd[] = {"alacritty", NULL};
 static const char *menucmd[] = {"bemenu-run", NULL};
 static const char *qutebrowsercmd[] = {"qutebrowser", NULL};
 
@@ -154,11 +155,11 @@ static const Key keys[] = {
     {MODKEY, XKB_KEY_w, spawn, {.v = qutebrowsercmd}},
     {MODKEY, XKB_KEY_period, spawn, SHCMD("playerctl next")},
     {MODKEY, XKB_KEY_comma, spawn, SHCMD("playerctl previous")},
+    {MODKEY, XKB_KEY_n, spawn,
+     SHCMD("/usr/bin/alacritty --class notetaker -e $HOME/.bin/notetaker")},
     {MODKEY, XKB_KEY_q, killclient, {0}},
     {MODKEY, XKB_KEY_j, focusstack, {.i = +1}},
     {MODKEY, XKB_KEY_k, focusstack, {.i = -1}},
-    {MODKEY, XKB_KEY_n, spawn,
-     SHCMD("/usr/bin/alacritty -e $HOME/.bin/notetaker")},
     {MODKEY, XKB_KEY_i, incnmaster, {.i = +1}},
     {MODKEY, XKB_KEY_o, incnmaster, {.i = -1}},
     {MODKEY, XKB_KEY_h, setmfact, {.f = -0.05}},
@@ -193,6 +194,29 @@ static const Key keys[] = {
     TAGKEYS(XKB_KEY_8, XKB_KEY_asterisk, 7),
     TAGKEYS(XKB_KEY_9, XKB_KEY_parenleft, 8),
     {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_Q, quit, {0}},
+    {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_H, move_cursor_x, {-20}},
+    {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_J, move_cursor_y, {20}},
+    {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_K, move_cursor_y, {-20}},
+    {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_L, move_cursor_x, {20}},
+
+    {MODKEY | WLR_MODIFIER_SHIFT | WLR_MODIFIER_CTRL,
+     XKB_KEY_H,
+     move_cursor_x,
+     {-150}},
+    {MODKEY | WLR_MODIFIER_SHIFT | WLR_MODIFIER_CTRL,
+     XKB_KEY_J,
+     move_cursor_y,
+     {150}},
+    {MODKEY | WLR_MODIFIER_SHIFT | WLR_MODIFIER_CTRL,
+     XKB_KEY_K,
+     move_cursor_y,
+     {-150}},
+    {MODKEY | WLR_MODIFIER_SHIFT | WLR_MODIFIER_CTRL,
+     XKB_KEY_L,
+     move_cursor_x,
+     {150}},
+
+    {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_O, mouse_click, {0}},
 
 /* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
 
