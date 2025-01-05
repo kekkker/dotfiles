@@ -1,0 +1,15 @@
+#!/bin/bash
+
+date=$(date +%Y-%m-%d)
+time=$(date +%H:%M)
+noteFilename="$HOME/notes/note-$date.md"
+
+if [ ! -f $noteFilename ]; then
+    echo "# Notes for $date" >$noteFilename
+fi
+
+nvim -c "norm Go" \
+    -c "norm Go## $time" \
+    -c "norm G2o" \
+    -c "norm zz" \
+    -c "startinsert" $noteFilename
