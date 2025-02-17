@@ -126,7 +126,7 @@ static const enum libinput_config_tap_button_map button_map =
   }
 
 /* commands */
-static const char *termcmd[] = {"alacritty", NULL};
+static const char *termcmd[] = {"foot", NULL};
 static const char *menucmd[] = {"bemenu-run", NULL};
 static const char *qutebrowsercmd[] = {"qutebrowser", NULL};
 
@@ -154,7 +154,7 @@ static const Key keys[] = {
     {MODKEY, XKB_KEY_Return, spawn, {.v = termcmd}},
     {MODKEY, XKB_KEY_w, spawn, {.v = qutebrowsercmd}},
     {MODKEY, XKB_KEY_n, spawn,
-     SHCMD("/usr/bin/alacritty --class notetaker -e $HOME/.bin/notetaker")},
+     SHCMD("/usr/bin/foot -a notetaker -e $HOME/.bin/notetaker")},
     {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_L, spawn,
      SHCMD("/usr/bin/swaylock -c '000000'")},
     {MODKEY, XKB_KEY_q, killclient, {0}},
