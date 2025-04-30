@@ -21,13 +21,8 @@ require("packer").startup(function(use)
 			require("toggleterm").setup()
 		end,
 	})
-	use({ "hrsh7th/nvim-cmp" })
-	use({ "hrsh7th/cmp-nvim-lsp" })
-	use({ "hrsh7th/cmp-buffer" })
-	use({ "hrsh7th/cmp-path" })
-	use({ "hrsh7th/cmp-cmdline" })
 	use({ "tanvirtin/vgit.nvim", requires = { "nvim-lua/plenary.nvim" } })
-	use({ "m4xshen/autoclose.nvim" })
+	-- use({ "m4xshen/autoclose.nvim" })
 	use({ "nvim-lualine/lualine.nvim", requires = { "nvim-tree/nvim-web-devicons", opt = true } })
 	use({ "mbbill/undotree" })
 	use({
@@ -45,42 +40,127 @@ require("packer").startup(function(use)
 			{ "williamboman/mason-lspconfig.nvim" }, -- Optional
 
 			-- Autocompletion
-			{ "hrsh7th/nvim-cmp" }, -- Required
-			{ "hrsh7th/cmp-nvim-lsp" }, -- Required
-			{ "L3MON4D3/LuaSnip" }, -- Required
+			{ "neovim/nvim-lspconfig" },
+			{ "hrsh7th/cmp-nvim-lsp" },
+			{ "hrsh7th/cmp-buffer" },
+			{ "hrsh7th/cmp-path" },
+			{ "hrsh7th/cmp-cmdline" },
+			{ "hrsh7th/nvim-cmp" },
+			{ "L3MON4D3/LuaSnip" },
+			{ "saadparwaiz1/cmp_luasnip" },
+			{ "tamago324/lir.nvim" },
 		},
 	})
 	use({ "stevearc/conform.nvim" })
-    use({"justinmk/vim-dirvish"})
-    use({"tamago324/lir.nvim"})
+	use({ "justinmk/vim-dirvish" })
+	use({ "ThePrimeagen/harpoon" })
+	use({ "tpope/vim-fugitive" })
 end)
-require("autoclose").setup()
+--require("autoclose").setup()
 
 -- PACKER --
 
--- nvim-cmp --
+-- cmp --
 local cmp = require("cmp")
+local luasnip = require("luasnip")
+require("luasnip.loaders.from_vscode").lazy_load()
+
 cmp.setup({
+	snippet = {
+		-- REQUIRED - you must specify a snippet engine
+		expand = function(args)
+			require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
+		end,
+	},
+	window = {
+		-- completion = cmp.config.window.bordered(),
+		-- documentation = cmp.config.window.bordered(),
+	},
 	mapping = cmp.mapping.preset.insert({
-		["<C-b>"] = cmp.mapping.scroll_docs(-4),
-		["<C-f>"] = cmp.mapping.scroll_docs(4),
-		["<C-Space>"] = cmp.mapping.complete(),
-		["<C-e>"] = cmp.mapping.abort(),
-		["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+		["<CR>"] = cmp.mapping.confirm({ select = true }),
+		["<Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_next_item()
+			elseif luasnip.expand_or_jumpable() then
+				luasnip.expand_or_jump()
+			-- this will auto complete if our cursor in next to a word and we press tab
+			-- elseif has_words_before() then
+			--     cmp.complete()
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+
+		["<S-Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item()
+			elseif luasnip.jumpable(-1) then
+				luasnip.jump(-1)
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+
+		["<C-Tab>"] = cmp.mapping(function(fallback)
+			if luasnip.expand_or_jumpable() then
+				luasnip.expand_or_jump()
+			-- this will auto complete if our cursor in next to a word and we press tab
+			-- elseif has_words_before() then
+			--     cmp.complete()
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
 	}),
 	sources = cmp.config.sources({
 		{ name = "nvim_lsp" },
+		{ name = "luasnip" }, -- For luasnip users.
 	}, {
 		{ name = "buffer" },
 	}),
 })
--- nvim-cmp --
+
+cmp.setup.cmdline({ "/", "?" }, {
+	mapping = cmp.mapping.preset.cmdline(),
+	sources = {
+		{ name = "buffer" },
+	},
+})
+
+cmp.setup.cmdline(":", {
+	mapping = cmp.mapping.preset.cmdline(),
+	sources = cmp.config.sources({
+		{ name = "path" },
+	}, {
+		{ name = "cmdline" },
+	}),
+	matching = { disallow_symbol_nonprefix_matching = false },
+})
+
+-- Set up lspconfig.
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+-- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
+
+require("lspconfig")["rust_analyzer"].setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+	settings = {
+		["rust_analyzer"] = {
+			diagnostics = {
+				enable = false,
+			},
+		},
+	},
+})
+
+-- cmp --
 
 -- LSP ZERO --
 lsp = require("lsp-zero")
 
 lsp.ensure_installed({
 	"clangd",
+	"rust_analyzer",
 })
 
 lsp.preset("recommended")
@@ -113,29 +193,6 @@ lsp.on_attach(function(client, bufnr)
 end)
 lsp.setup()
 -- LSP ZERO --
-
--- LUA LINE --
-require("lualine").setup({
-	options = {
-		icons_enabled = true,
-		theme = "onedark",
-		component_separators = "|",
-		section_separators = "",
-	},
-	sections = {
-		lualine_a = {
-			{
-				"buffers",
-			},
-		},
-		lualine_c = {
-			{
-				"diagnostics",
-			},
-		},
-	},
-})
--- LUA LINE --
 
 -- TELESCOPE --
 builtin = require("telescope.builtin")
@@ -195,22 +252,29 @@ require("vgit").setup({
 -- CONFORM --
 require("conform").setup({
 	formatters = {
-		yamlfmt = {
-			command = "/home/kek/.bin/yamlfmt",
-			args = { "-formatter", "indentless_arrays=false,retain_line_breaks=true,include_document_start=true", "-" },
+		--yamlfmt = {
+		--command = "/home/kek/.bin/yamlfmt",
+		--args = { "-formatter", "indentless_arrays=false,retain_line_breaks=true,include_document_start=true", "-" },
+		--},
+		black = {
+			command = "/home/kek/py-user/bin/black",
+			args = { "--stdin-filename", "$FILENAME", "--quiet", "-" },
 		},
-        black = {
-            command = "/home/kek/py-user/bin/black",
-            args = {    "--stdin-filename",    "$FILENAME",    "--quiet",    "-",}
-      }
+		astyle = {
+			command = "astyle",
+			args = { "--style=kr", "--indent=spaces=4" },
+		},
 	},
 	formatters_by_ft = {
 		sh = { "shfmt" },
 		bash = { "shfmt" },
 		terraform = { "terraform_fmt" },
-		yaml = { "yamlfmt" },
-		yml = { "yamlfmt" },
+		--yaml = { "yamlfmt" },
+		--yml = { "yamlfmt" },
 		python = { "black" },
+		c = { "astyle" },
+		cpp = { "astyle" },
+		rust = { "rustfmt" },
 	},
 })
 
@@ -222,30 +286,38 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 -- CONFORM --
 
--- REMAPS
-vim.keymap.set("n", "<leader>w", ":w<CR>")
-vim.keymap.set("n", "<leader>q", ":q!<CR>")
-vim.keymap.set("n", "<C-Tab>", ":asdasd")
+-- HARPOON --
+local mark = require("harpoon.mark")
+local ui = require("harpoon.ui")
+require("harpoon").setup({
+	global_settings = {
+		-- sets the marks upon calling `toggle` on the ui, instead of require `:w`.
+		save_on_toggle = false,
 
-function _lazygit_toggle()
-	local Terminal = require("toggleterm.terminal").Terminal
-	local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
-	lazygit:toggle()
-end
+		-- saves the harpoon file upon every change. disabling is unrecommended.
+		save_on_change = true,
 
-vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
+		-- sets harpoon to run the command immediately as it's passed to the terminal when calling `sendCommand`.
+		enter_on_sendcmd = false,
 
-vim.api.nvim_create_autocmd("BufWritePre", {
-	buffer = buffer,
-	callback = function()
-		vim.lsp.buf.format({ async = false })
-	end,
+		-- closes any tmux windows harpoon that harpoon creates when you close Neovim.
+		tmux_autoclose_windows = false,
+
+		-- filetypes that you want to prevent from adding to the harpoon list menu.
+		excluded_filetypes = { "harpoon" },
+
+		-- set marks specific to each git branch inside git repository
+		mark_branch = true,
+
+		-- enable tabline with harpoon marks
+		tabline = true,
+		tabline_prefix = "   ",
+		tabline_suffix = "   ",
+	},
 })
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
-vim.keymap.set("x", "<leader>p", '"_dP')
-vim.keymap.set("n", "L", vim.cmd.bnext)
-vim.keymap.set("n", "H", vim.cmd.bprevious)
+
+vim.keymap.set("n", "<leader>a", mark.add_file)
+vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
 
 vim.keymap.set("n", "<C-t>", function()
 	ui.nav_file(1)
@@ -256,16 +328,40 @@ end)
 vim.keymap.set("n", "<C-n>", function()
 	ui.nav_file(3)
 end)
+vim.keymap.set("n", "<C-s>", function()
+	ui.nav_file(4)
+end)
+-- HARPOON --
+
+-- FUGITIVE --
+vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
+-- FUGITIVE --
+
+-- REMAPS
+vim.keymap.set("n", "<leader>w", ":w<CR>")
+vim.keymap.set("n", "<leader>q", ":q!<CR>")
+
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("x", "<leader>p", '"_dP')
 
 vim.keymap.set("n", "<leader>fw", builtin.live_grep, {})
 vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
+vim.keymap.set('n', '<leader>fr', function()
+  local dir = vim.fn.expand('%:p:h')
+  builtin.find_files({cwd = dir})
+end, { desc = "Reletive find ripgrep." })
+
 vim.keymap.set("n", "<leader>gs", builtin.git_status, {})
+vim.keymap.set("n", "<leader>pp", builtin.git_files, {})
 vim.keymap.set("n", "<leader>b", builtin.buffers, {})
 vim.keymap.set("n", "<leader>ps", function()
 	builtin.grep_string({ search = vim.fn.input("Grep > ") })
 end)
+vim.keymap.set("n", "<leader>e", ":Ex<CR>")
 
-vim.keymap.set("n", "<leader>x", vim.cmd.bd)
+vim.keymap.set("n", "<Tab>", "<C-o>", { noremap = true, silent = true })
+vim.keymap.set("n", "<S-Tab>", "<C-i>", { noremap = true, silent = true })
 -- REMAPS
 
 -- SETS --
@@ -274,7 +370,7 @@ vim.opt.relativenumber = true
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 2
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
 vim.opt.wrap = false
@@ -291,12 +387,6 @@ vim.opt.signcolumn = "yes"
 vim.wo.signcolumn = "yes"
 vim.cmd("highlight SignColumn guibg=black")
 vim.cmd("hi! link NormalFloat Normal")
-
-vim.g.netrw_banner = 0
-vim.g.netrw_winsize = 25
-vim.g.netrw_altv = 1
-vim.g.netrw_winsize = 25
-vim.g.netrw_liststyle = 3
 
 vim.opt.swapfile = false
 vim.opt.backup = false
@@ -327,12 +417,6 @@ vim.wo.signcolumn = "yes"
 vim.cmd("highlight SignColumn guibg=black")
 vim.cmd("hi! link NormalFloat Normal")
 
-vim.g.netrw_banner = 0
-vim.g.netrw_winsize = 25
-vim.g.netrw_altv = 1
-vim.g.netrw_winsize = 25
-vim.g.netrw_liststyle = 3
-
 vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
@@ -343,7 +427,6 @@ vim.opt.undofile = true
 local actions = require'lir.actions'
 local mark_actions = require 'lir.mark.actions'
 local clipboard_actions = require'lir.clipboard.actions'
-
 require'lir'.setup {
   show_hidden_files = true,
   ignore = {}, -- { ".DS_Store", "node_modules" } etc.
@@ -387,7 +470,7 @@ require'lir'.setup {
       local height = math.floor(vim.o.lines)
       return {
         border = {
-          "+", "─", "+", "│", "+", "─", "+", "│",
+          "", "", "", "", "", "", "", "",
         },
         width = width,
         height = height,
@@ -418,3 +501,17 @@ vim.api.nvim_create_autocmd({'FileType'}, {
   end
 })
 vim.keymap.set("n", "<leader>e", ":lua require'lir.float'.toggle()<CR>")
+
+vim.keymap.set("n", "<leader>x", ":bd<CR>")
+
+-- Horizontal split (silent)
+vim.keymap.set('n', '<leader>th', function()
+  local dir = vim.fn.expand('%:p:h')
+  vim.cmd('silent !tmux split-window -h -c ' .. vim.fn.shellescape(dir) .. ' >/dev/null 2>&1')
+end, { desc = "Tmux horizontal split (silent)" })
+
+-- Vertical split (silent)
+vim.keymap.set('n', '<leader>tv', function()
+  local dir = vim.fn.expand('%:p:h')
+  vim.cmd('silent !tmux split-window -v -c ' .. vim.fn.shellescape(dir) .. ' >/dev/null 2>&1')
+end, { desc = "Tmux vertical split (silent)" })
