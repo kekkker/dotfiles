@@ -5,60 +5,54 @@ vim.cmd([[colorscheme vim]])
 vim.cmd([[packadd packer.nvim]])
 
 require("packer").startup(function(use)
-	use("wbthomason/packer.nvim")
+        use("wbthomason/packer.nvim")
 
-	use({
-		"nvim-telescope/telescope.nvim",
-		requires = { { "nvim-lua/plenary.nvim" } },
-	})
+        use({
+                "nvim-telescope/telescope.nvim",
+                requires = { { "nvim-lua/plenary.nvim" } },
+        })
 
-	use("nvim-treesitter/nvim-treesitter", {})
+        use("nvim-treesitter/nvim-treesitter", {})
 
-	use({
-		"akinsho/toggleterm.nvim",
-		tag = "*",
-		config = function()
-			require("toggleterm").setup()
-		end,
-	})
-	use({ "tanvirtin/vgit.nvim", requires = { "nvim-lua/plenary.nvim" } })
-	-- use({ "m4xshen/autoclose.nvim" })
-	use({ "nvim-lualine/lualine.nvim", requires = { "nvim-tree/nvim-web-devicons", opt = true } })
-	use({ "mbbill/undotree" })
-	use({
-		"VonHeikemen/lsp-zero.nvim",
-		branch = "v2.x",
-		requires = {
-			-- LSP Support
-			{ "neovim/nvim-lspconfig" }, -- Required
-			{ -- Optional
-				"williamboman/mason.nvim",
-				run = function()
-					pcall(vim.cmd, "MasonUpdate")
-				end,
-			},
-			{ "williamboman/mason-lspconfig.nvim" }, -- Optional
-
-			-- Autocompletion
-			{ "neovim/nvim-lspconfig" },
-			{ "hrsh7th/cmp-nvim-lsp" },
-			{ "hrsh7th/cmp-buffer" },
-			{ "hrsh7th/cmp-path" },
-			{ "hrsh7th/cmp-cmdline" },
-			{ "hrsh7th/nvim-cmp" },
-			{ "L3MON4D3/LuaSnip" },
-			{ "saadparwaiz1/cmp_luasnip" },
-			{ "tamago324/lir.nvim" },
-		},
-	})
-	use({ "stevearc/conform.nvim" })
-	use({ "justinmk/vim-dirvish" })
-	use({ "ThePrimeagen/harpoon" })
-	use({ "tpope/vim-fugitive" })
+        use({
+                "akinsho/toggleterm.nvim",
+                tag = "*",
+                config = function()
+                        require("toggleterm").setup()
+                end,
+        })
+        use({ "tanvirtin/vgit.nvim", requires = { "nvim-lua/plenary.nvim" } })
+        -- use({ "m4xshen/autoclose.nvim" })
+        use({ "nvim-lualine/lualine.nvim", requires = { "nvim-tree/nvim-web-devicons", opt = true } })
+        use({ "mbbill/undotree" })
+	use({ "hrsh7th/cmp-nvim-lsp" })
+	use({ "hrsh7th/cmp-buffer" })
+	use({ "hrsh7th/cmp-path" })
+	use({ "hrsh7th/cmp-cmdline" })
+	use({ "hrsh7th/nvim-cmp" })
+	use({ "L3MON4D3/LuaSnip" })
+	use({ "saadparwaiz1/cmp_luasnip" })
+	use({ "tamago324/lir.nvim" })
+        use({ "stevearc/conform.nvim" })
+        use({ "justinmk/vim-dirvish" })
+        use({ "ThePrimeagen/harpoon" })
+        use({ "tpope/vim-fugitive" })
 end)
 --require("autoclose").setup()
-
 -- PACKER --
+-- LSP
+vim.lsp.enable('clangd')
+vim.keymap.set('n', 'gd', '<c-]>')
+vim.keymap.set('n', '<c-a>', '<c-x>')
+vim.diagnostic.config({
+    -- virtual_lines = true,
+    virtual_text = true,
+
+})
+vim.keymap.set("n", "<leader>la", function()
+		vim.lsp.buf.code_action()
+end, opts)
+-- LSP
 
 -- cmp --
 local cmp = require("cmp")
@@ -137,62 +131,8 @@ cmp.setup.cmdline(":", {
 	matching = { disallow_symbol_nonprefix_matching = false },
 })
 
--- Set up lspconfig.
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
--- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-
-require("lspconfig")["rust_analyzer"].setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	settings = {
-		["rust_analyzer"] = {
-			diagnostics = {
-				enable = false,
-			},
-		},
-	},
-})
-
 -- cmp --
 
--- LSP ZERO --
-lsp = require("lsp-zero")
-
-lsp.ensure_installed({
-	"clangd",
-	"rust_analyzer",
-})
-
-lsp.preset("recommended")
-lsp.on_attach(function(client, bufnr)
-	local opts = { buffer = buffnr, remap = false }
-	vim.keymap.set("n", "gd", function()
-		vim.lsp.buf.definition()
-	end, opts)
-	vim.keymap.set("n", "K", function()
-		vim.lsp.buf.hover()
-	end, opts)
-	vim.keymap.set("n", "<leader>vws", function()
-		vim.lsp.buf.workspace_symbol()
-	end, opts)
-	vim.keymap.set("n", "<leader>vd", function()
-		vim.diagnostic.open_float()
-	end, opts)
-	vim.keymap.set("n", "<leader>vd", function()
-		vim.diagnostic.goto_next()
-	end, opts)
-	vim.keymap.set("n", "[d", function()
-		vim.diagnostic.goto_next()
-	end, opts)
-	vim.keymap.set("n", "]d", function()
-		vim.diagnostic.goto_prev()
-	end, opts)
-	vim.keymap.set("n", "<leader>la", function()
-		vim.lsp.buf.code_action()
-	end, opts)
-end)
-lsp.setup()
--- LSP ZERO --
 
 -- TELESCOPE --
 builtin = require("telescope.builtin")
