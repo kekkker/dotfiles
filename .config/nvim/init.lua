@@ -247,7 +247,7 @@ require("harpoon").setup({
 		excluded_filetypes = { "harpoon" },
 
 		-- set marks specific to each git branch inside git repository
-		mark_branch = true,
+		mark_branch = false,
 
 		-- enable tabline with harpoon marks
 		tabline = true,
@@ -257,18 +257,18 @@ require("harpoon").setup({
 })
 
 vim.keymap.set("n", "<leader>a", mark.add_file)
-vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
+vim.keymap.set("n", "<leader>h", ui.toggle_quick_menu)
 
-vim.keymap.set("n", "<C-t>", function()
+vim.keymap.set("n", "<leader>r", function()
 	ui.nav_file(1)
 end)
-vim.keymap.set("n", "<C-h>", function()
+vim.keymap.set("n", "<leader>t", function()
 	ui.nav_file(2)
 end)
-vim.keymap.set("n", "<C-n>", function()
+vim.keymap.set("n", "<leader>y", function()
 	ui.nav_file(3)
 end)
-vim.keymap.set("n", "<C-s>", function()
+vim.keymap.set("n", "<leader>i", function()
 	ui.nav_file(4)
 end)
 -- HARPOON --
@@ -364,84 +364,6 @@ vim.opt.undofile = true
 -- SETS --
 --
 --
-local actions = require'lir.actions'
-local mark_actions = require 'lir.mark.actions'
-local clipboard_actions = require'lir.clipboard.actions'
-require'lir'.setup {
-  show_hidden_files = true,
-  ignore = {}, -- { ".DS_Store", "node_modules" } etc.
-  devicons = {
-    enable = false,
-    highlight_dirname = false
-  },
-  mappings = {
-    ['l']     = actions.edit,
-    ['<C-s>'] = actions.split,
-    ['<C-v>'] = actions.vsplit,
-    ['<C-t>'] = actions.tabedit,
-
-    ['h']     = actions.up,
-    ['q']     = actions.quit,
-
-    ['D']     = actions.mkdir,
-    ['F']     = actions.newfile,
-    ['R']     = actions.rename,
-    ['@']     = actions.cd,
-    ['Y']     = actions.yank_path,
-    ['.']     = actions.toggle_show_hidden,
-    ['d']     = actions.delete,
-
-    ['J'] = function()
-      mark_actions.toggle_mark()
-      vim.cmd('normal! j')
-    end,
-    ['C'] = clipboard_actions.copy,
-    ['X'] = clipboard_actions.cut,
-    ['P'] = clipboard_actions.paste,
-  },
-  float = {
-    winblend = 1,
-    curdir_window = {
-      enable = true,
-      highlight_dirname = true
-    },
-    win_opts = function()
-      local width = math.floor(vim.o.columns)
-      local height = math.floor(vim.o.lines)
-      return {
-        border = {
-          "", "", "", "", "", "", "", "",
-        },
-        width = width,
-        height = height,
-        row = 1,
-        col = math.floor((vim.o.columns - width) / 2),
-      }
-    end,
-
-
-  },
-  hide_cursor = true
-}
-
-vim.api.nvim_create_autocmd({'FileType'}, {
-  pattern = {"lir"},
-  callback = function()
-    -- use visual mode
-    vim.api.nvim_buf_set_keymap(
-      0,
-      "x",
-      "J",
-      ':<C-u>lua require"lir.mark.actions".toggle_mark("v")<CR>',
-      { noremap = true, silent = true }
-    )
-  
-    -- echo cwd
-    vim.api.nvim_echo({ { vim.fn.expand("%:p"), "Normal" } }, false, {})
-  end
-})
-vim.keymap.set("n", "<leader>e", ":lua require'lir.float'.toggle()<CR>")
-
 vim.keymap.set("n", "<leader>x", ":bd<CR>")
 
 -- Horizontal split (silent)
@@ -455,3 +377,10 @@ vim.keymap.set('n', '<leader>tv', function()
   local dir = vim.fn.expand('%:p:h')
   vim.cmd('silent !tmux split-window -v -c ' .. vim.fn.shellescape(dir) .. ' >/dev/null 2>&1')
 end, { desc = "Tmux vertical split (silent)" })
+
+-- Netrw
+vim.g.netrw_banner = 0 -- Hide the Netrw banner on top
+vim.g.netrw_altv = 1 -- Create the split of the Netrw window to the left
+vim.g.netrw_browse_split = 0
+vim.g.netrw_liststyle = 4 -- Set the styling of the file list to be one column with files inside
+vim.g.netrw_winsize = 14 -- Set the width of the "drawer"

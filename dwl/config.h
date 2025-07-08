@@ -35,6 +35,7 @@ static const Layout layouts[] = {
     {"[]=", tile},
     {"><>", NULL}, /* no layout function means floating behavior */
     {"[M]", monocle},
+    {"|M|", centeredmaster},
 };
 
 /* monitors */
@@ -145,7 +146,8 @@ static const char *const autostart[] = {
     NULL,
     "dunst",
     NULL,
-    NULL};
+    NULL
+};
 
 static const Key keys[] = {
     /* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
@@ -153,10 +155,14 @@ static const Key keys[] = {
     {MODKEY, XKB_KEY_d, spawn, {.v = menucmd}},
     {MODKEY, XKB_KEY_Return, spawn, {.v = termcmd}},
     {MODKEY, XKB_KEY_w, spawn, {.v = qutebrowsercmd}},
-    {MODKEY, XKB_KEY_n, spawn,
-     SHCMD("/usr/bin/foot -a notetaker -e $HOME/.bin/notetaker")},
-    {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_L, spawn,
-     SHCMD("/usr/bin/swaylock -c '000000'")},
+    {
+        MODKEY, XKB_KEY_n, spawn,
+        SHCMD("/usr/bin/foot -a notetaker -e $HOME/.bin/notetaker")
+    },
+    {
+        MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_L, spawn,
+        SHCMD("/usr/bin/swaylock -c '000000'")
+    },
     {MODKEY, XKB_KEY_q, killclient, {0}},
     {MODKEY, XKB_KEY_j, focusstack, {.i = +1}},
     {MODKEY, XKB_KEY_k, focusstack, {.i = -1}},
@@ -164,6 +170,7 @@ static const Key keys[] = {
     {MODKEY, XKB_KEY_o, incnmaster, {.i = -1}},
     {MODKEY, XKB_KEY_h, setmfact, {.f = -0.05}},
     {MODKEY, XKB_KEY_l, setmfact, {.f = +0.05}},
+    {MODKEY, XKB_KEY_c, setlayout, {.v = &layouts[3]}},
     {MODKEY, XKB_KEY_z, zoom, {0}},
     {MODKEY, XKB_KEY_Tab, view, {0}},
     {MODKEY, XKB_KEY_t, setlayout, {.v = &layouts[0]}},
@@ -177,10 +184,12 @@ static const Key keys[] = {
     {MODKEY, XKB_KEY_g, focusmon, {.i = WLR_DIRECTION_LEFT}},
     {MODKEY, XKB_KEY_y, focusmon, {.i = WLR_DIRECTION_RIGHT}},
     {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_G, tagmon, {.i = WLR_DIRECTION_LEFT}},
-    {MODKEY | WLR_MODIFIER_SHIFT,
-     XKB_KEY_Y,
-     tagmon,
-     {.i = WLR_DIRECTION_RIGHT}},
+    {
+        MODKEY | WLR_MODIFIER_SHIFT,
+        XKB_KEY_Y,
+        tagmon,
+        {.i = WLR_DIRECTION_RIGHT}
+    },
     {MODKEY, XKB_KEY_period, spawn, SHCMD("playerctl next")},
     {MODKEY, XKB_KEY_comma, spawn, SHCMD("playerctl previous")},
     {MODKEY, XKB_KEY_comma, spawn, SHCMD("playerctl previous")},
@@ -194,9 +203,12 @@ static const Key keys[] = {
     TAGKEYS(XKB_KEY_7, XKB_KEY_ampersand, 6),
     TAGKEYS(XKB_KEY_8, XKB_KEY_asterisk, 7),
     TAGKEYS(XKB_KEY_9, XKB_KEY_parenleft, 8),
-    {MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_Q, quit, {0}},
+    {
+        MODKEY | WLR_MODIFIER_SHIFT, XKB_KEY_Q, spawn,
+        SHCMD("/usr/bin/foot -a notetaker -e $HOME/.bin/morning-questions")
+    },
 
-/* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
+    /* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
 
 #define CHVT(n)                                                                \
   {                                                                            \
@@ -222,4 +234,3 @@ static const Button buttons[] = {
     {MODKEY, BTN_LEFT, moveresize, {.ui = CurMove}},
     {MODKEY, BTN_MIDDLE, togglefloating, {0}},
     {MODKEY, BTN_RIGHT, moveresize, {.ui = CurResize}},
-};
