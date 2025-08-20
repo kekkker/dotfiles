@@ -39,11 +39,6 @@ config.set("content.cookies.accept", "all", "chrome-devtools://*")
 # between 5.12 and 5.14 (inclusive), changing the value exposed to
 # JavaScript requires a restart.
 # Type: FormatString
-config.set(
-    "content.headers.user_agent",
-    "Mozilla/5.0 ({os_info}) AppleWebKit/{webkit_version} (KHTML, like Gecko) {upstream_browser_key}/{upstream_browser_version} Safari/{webkit_version}",
-    "https://web.whatsapp.com/",
-)
 
 # User agent to send.  The following placeholders are defined:  *
 # `{os_info}`: Something like "X11; Linux x86_64". * `{webkit_version}`:
@@ -59,11 +54,6 @@ config.set(
 # between 5.12 and 5.14 (inclusive), changing the value exposed to
 # JavaScript requires a restart.
 # Type: FormatString
-config.set(
-    "content.headers.user_agent",
-    "Mozilla/5.0 ({os_info}; rv:90.0) Gecko/20100101 Firefox/90.0",
-    "https://accounts.google.com/*",
-)
 
 # User agent to send.  The following placeholders are defined:  *
 # `{os_info}`: Something like "X11; Linux x86_64". * `{webkit_version}`:
@@ -79,11 +69,6 @@ config.set(
 # between 5.12 and 5.14 (inclusive), changing the value exposed to
 # JavaScript requires a restart.
 # Type: FormatString
-config.set(
-    "content.headers.user_agent",
-    "Mozilla/5.0 ({os_info}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99 Safari/537.36",
-)
-
 # Which method of blocking ads should be used.  Support for Adblock Plus
 # (ABP) syntax blocklists using Brave's Rust library requires the
 # `adblock` Python package to be installed, which is an optional
@@ -178,9 +163,6 @@ c.url.searchengines = {"DEFAULT": "https://searx.syscat.org/?q={}"}
 #   - dark: Force a dark theme.
 c.colors.webpage.preferred_color_scheme = "dark"
 
-config.bind("C", "hint images userscript /home/kek/.bin/clipper.sh")
-config.bind("S", "spawn --userscript /home/kek/projects/captcha/recaptcha-parser.sh")
-
 config.bind(
     "pw",
     "spawn --userscript /home/kek/.bin/qute-keepass.sh",
@@ -197,6 +179,11 @@ c.hints.selectors["all"].append(
     'svg[class="ud-icon ud-icon-xsmall ud-fake-toggle-input ud-fake-toggle-checkbox"]'
 )
 
+c.hints.selectors["all"].append('div[class="tab_VTIYU"]')
+
+c.hints.selectors["all"].append('input[type*="."]')
+c.hints.selectors["all"].append('iframe[src*="recaptcha"]')
+
 c.fileselect.handler = "external"
 c.fileselect.folder.command = [
     "foot",
@@ -207,14 +194,25 @@ c.fileselect.folder.command = [
 c.fileselect.multiple_files.command = [
     "foot",
     "-e",
-    "/home/kek/py-user/bin/ranger",
-    "--choosefiles={}",
+    "tmux",
+    "new-session",
+    "-s",
+    "nnn_session",
+    "NNN_TERMINAL=/usr/bin/foot NNN_FIFO=/tmp/nnn_fifo NNN_PLUG='p:preview-tui' NNN_PREVIEWIMGPROG='/home/kek/.bin/nnn-img2sixel'' nnn -p{}; tmux kill-session -t nnn_session",
 ]
 c.fileselect.single_file.command = [
     "foot",
     "-e",
-    "/home/kek/py-user/bin/ranger",
-    "--choosefile={}",
+    "tmux",
+    "new-session",
+    "-s",
+    "nnn_session",
+    "NNN_TERMINAL=/usr/bin/foot NNN_FIFO=/tmp/nnn_fifo NNN_PLUG='p:preview-tui' NNN_PREVIEWIMGPROG='/home/kek/.bin/nnn-img2sixel' nnn -p{}; tmux kill-session -t nnn_session",
 ]
 # c.colors.webpage.darkmode.enabled = True
 c.content.notifications.enabled = False
+
+# c.content.user_stylesheets = ["all-sites.css"]
+c.fonts.default_family = ["Terminus"]
+c.qt.args = ["proxy-pac-url=file://" + str(config.configdir / "proxy.pac")]
+c.url.start_pages = "https://searx.syscat.org"
