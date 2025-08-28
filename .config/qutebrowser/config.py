@@ -185,20 +185,12 @@ c.hints.selectors["all"].append('input[type*="."]')
 c.hints.selectors["all"].append('iframe[src*="recaptcha"]')
 
 c.fileselect.handler = "external"
-c.fileselect.folder.command = [
-    "foot",
-    "-e",
-    "/home/kek/py-user/bin/ranger",
-    "--choosedir={}",
-]
 c.fileselect.multiple_files.command = [
     "foot",
     "-e",
-    "tmux",
-    "new-session",
-    "-s",
-    "nnn_session",
-    "NNN_TERMINAL=/usr/bin/foot NNN_FIFO=/tmp/nnn_fifo NNN_PLUG='p:preview-tui' NNN_PREVIEWIMGPROG='/home/kek/.bin/nnn-img2sixel'' nnn -p{}; tmux kill-session -t nnn_session",
+    "sh",
+    "-c",
+    "export NNN_SEL=/tmp/nnn_selection; NNN_TERMINAL=/usr/bin/foot NNN_FIFO=/tmp/nnn_fifo NNN_PLUG='p:preview-tui' NNN_PREVIEWIMGPROG='/home/kek/.bin/nnn-img2sixel' nnn -p{}; cat /tmp/nnn_selection 2>/dev/null || echo",
 ]
 c.fileselect.single_file.command = [
     "foot",
